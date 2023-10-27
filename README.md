@@ -5,7 +5,7 @@
 - composer install;
 - cp .env.example .env;
 - php artisan key:generate;
-- php artisan migrate;
+- php artisan migrate (utilizei banco de dados MySql local para desenvolvimento)
 
 ## Telas do sistema
 - Criar Clientes: customers/create
