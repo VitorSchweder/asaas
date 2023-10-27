@@ -23,6 +23,7 @@
                         <th scope="col">ID</th>
                         <th scope="col">Status</th>
                         <th scope="col">Tipo</th>
+                        <th scope="col">Valor</th>
                         <th scope="col">Data</th>
                         <th scope="col">Cliente</th>
                       </tr>
@@ -33,6 +34,7 @@
                             <th scope="row">{{ $transaction->id }}</th>
                             <td>{{ $transaction->status }}</td>
                             <td>{{ $transaction->type }}</td>
+                            <td>R$ {{ $transaction->value }}</td>
                             <td>{{ $transaction->created_at }}</td>
                             <td>{{ $transaction->customer->name }}</td>
                         </tr>
