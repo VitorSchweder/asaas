@@ -8,18 +8,20 @@ use Illuminate\View\View;
 use App\Repositories\Customers\CustomerRepositoryContract;
 use App\Http\Requests\CustomerRequest;
 use Illuminate\Support\Facades\Log;
-use App\Services\AsaasService;
+use App\Services\AsaasServiceContract;
 use Illuminate\Http\RedirectResponse;
 
 class CustomerController extends Controller
 {
     private CustomerRepositoryContract $customerRepository;
-    private AsaasService $asaasService;
+    private AsaasServiceContract $asaasService;
 
-    public function __construct(CustomerRepositoryContract $customerRepositoryContract) 
-    {
+    public function __construct(
+        CustomerRepositoryContract $customerRepositoryContract,
+        AsaasServiceContract $asaasServiceContract
+    ) {
         $this->customerRepository = $customerRepositoryContract;
-        $this->asaasService = new AsaasService();
+        $this->asaasService = $asaasServiceContract;
     }
 
     /**

@@ -4,10 +4,11 @@ namespace App\Services;
 use Illuminate\Support\Facades\Log;
 use GuzzleHttp\Client;
 use App\Models\Transaction; 
+use App\Models\Customer; 
 use Carbon\Carbon;
 use Exception;
 
-class AsaasService 
+class AsaasService implements AsaasServiceContract
 {
     protected $client;
 
@@ -16,7 +17,7 @@ class AsaasService
         $this->client = new Client();
     }
 
-    public function createCustomerRequest($customer)
+    public function createCustomerRequest(Customer $customer): array|Exception
     {
         $body = [
             'name' => $customer->name,
@@ -36,18 +37,18 @@ class AsaasService
         return $data;
     }
 
-    public function createTransactionRequest($transaction, $request): array|Exception
+    public function createTransactionRequest(Transaction $transaction, array $request): array|Exception
     {
         if ($transaction->type == Transaction::TYPE_CREDIT_CARD) {
             $data = $this->createCreditCardTransaction($transaction, $request);
         }
 
         if ($transaction->type == Transaction::TYPE_BOLETO) {
-            $data = $this->createBoletoTransaction($transaction, $request);
+            $data = $this->createBoletoTransaction($transaction);
         }
 
         if ($transaction->type == Transaction::TYPE_PIX) {
-            $data = $this->createPixTransaction($transaction, $request);
+            $data = $this->createPixTransaction($transaction);
         }
 
         if (isset($data['error'])) {
@@ -57,7 +58,7 @@ class AsaasService
         return $data;
     }
 
-    private function createBoletoTransaction($transaction, $request): array
+    public function createBoletoTransaction(Transaction $transaction): array
     {
         $date = Carbon::now();
         $date = $date->addDays(2);
@@ -72,7 +73,7 @@ class AsaasService
         return $this->makeRequest($body, '/v3/payments');
     }
 
-    private function createPixTransaction($transaction, $request): array
+    public function createPixTransaction(Transaction $transaction): array
     {
         $date = Carbon::now();
         $date = $date->addDays(2);
@@ -94,7 +95,7 @@ class AsaasService
         return array_merge($resultTransaction, $resultData);
     }
 
-    private function createCreditCardTransaction($transaction, $request): array
+    public function createCreditCardTransaction(Transaction $transaction, array $request): array
     {
         $date = Carbon::now();
         $date = $date->addDays(2);
@@ -124,7 +125,7 @@ class AsaasService
         return $this->makeRequest($body, '/v3/payments');
     }
 
-    private function makeRequest(array $body, string $url, $type = 'POST'): array
+    public function makeRequest(array $body, string $url, string $type = 'POST'): array
     {
         $requestParams =[
             'headers' => [

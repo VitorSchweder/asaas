@@ -33,6 +33,7 @@
                         <th scope="col">CEP</th>
                         <th scope="col">Número do endereço</th>
                         <th scope="col">Telefone</th>
+                        <th scope="col">Data</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -45,6 +46,7 @@
                                 <td>{{ $customer->postal_code }}</td>
                                 <td>{{ $customer->address_number }}</td>
                                 <td>{{ $customer->phone }}</td>
+                                <td>{{ $customer->created_at }}</td>
                             </tr>
                         @empty
                             <td colspan="6">

@@ -8,7 +8,7 @@ use App\Repositories\Customers\CustomerRepositoryEloquent;
 use App\Repositories\Transactions\TransactionRepositoryContract;
 use App\Repositories\Transactions\TransactionRepositoryEloquent;
 
-class RepositoriesServiceProvider extends ServiceProvider
+class RepositoryServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap the application services.

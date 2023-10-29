@@ -7,24 +7,24 @@ use Illuminate\View\View;
 use App\Repositories\Transactions\TransactionRepositoryContract;
 use App\Repositories\Customers\CustomerRepositoryContract;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use App\Http\Requests\TransactionRequest;
-use App\Services\AsaasService;
+use App\Services\AsaasServiceContract;
 use Illuminate\Support\Facades\Log;
 
 class TransactionController extends Controller
 {
     private TransactionRepositoryContract $transactionRepository;
     private CustomerRepositoryContract $customerRepository;
-    private AsaasService $asaasService;
+    private AsaasServiceContract $asaasService;
 
     public function __construct(
         TransactionRepositoryContract $transactionRepositoryContract,
-        CustomerRepositoryContract $customerRepositoryContract
+        CustomerRepositoryContract $customerRepositoryContract,
+        AsaasServiceContract $asaasServiceContract
     ) {
         $this->transactionRepository = $transactionRepositoryContract;
         $this->customerRepository = $customerRepositoryContract;
-        $this->asaasService = new AsaasService();
+        $this->asaasService = $asaasServiceContract;
     }
 
     /**
