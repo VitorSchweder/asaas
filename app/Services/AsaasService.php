@@ -140,7 +140,7 @@ class AsaasService
         try {
             $response = $this->client->request(
                 $type, 
-                env('ASASS_API_URL', 'https://sandbox.asaas.com/api').$url, 
+                env('ASAAS_API_URL', 'https://sandbox.asaas.com/api').$url, 
                 $requestParams
             );
 
