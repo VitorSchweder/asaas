@@ -5,8 +5,14 @@
 <div class="row justify-content-center mt-3">
     <div class="col-md-12">
 
-        @if ($message = Session::get('message'))
-            <div class="alert alert-message" role="alert">
+        @if ($message = Session::get('success'))
+            <div class="alert alert-success" role="alert">
+                {{ $message }}
+            </div>
+        @endif
+
+        @if ($message = Session::get('error'))
+            <div class="alert alert-danger" role="alert">
                 {{ $message }}
             </div>
         @endif
@@ -31,15 +37,15 @@
                     </thead>
                     <tbody>
                         @forelse ($customers as $customer)
-                        <tr>
-                            <th scope="row">{{ $customer->id }}</th>
-                            <td>{{ $customer->name }}</td>
-                            <td>{{ $customer->email }}</td>
-                            <td>{{ $customer->document }}</td>
-                            <td>{{ $customer->postal_code }}</td>
-                            <td>{{ $customer->address_number }}</td>
-                            <td>{{ $customer->phone }}</td>
-                        </tr>
+                            <tr>
+                                <th scope="row">{{ $customer->id }}</th>
+                                <td>{{ $customer->name }}</td>
+                                <td>{{ $customer->email }}</td>
+                                <td>{{ $customer->document }}</td>
+                                <td>{{ $customer->postal_code }}</td>
+                                <td>{{ $customer->address_number }}</td>
+                                <td>{{ $customer->phone }}</td>
+                            </tr>
                         @empty
                             <td colspan="6">
                                 <span class="text-danger">

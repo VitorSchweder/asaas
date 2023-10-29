@@ -27,9 +27,9 @@ class TransactionRequest extends FormRequest
             'value' => 'required|decimal:2',
             'holder_name' => 'required_if:type,CREDIT_CARD',
             'number' => 'required_if:type,CREDIT_CARD',
-            'expiry_month' => 'required_if:type,CREDIT_CARD',
-            'expiry_year' => 'required_if:type,CREDIT_CARD',
-            'ccv' => 'required_if:type,CREDIT_CARD'
+            'expiry_month' => 'required_if:type,==,CREDIT_CARD|nullable|numeric|digits:2|min:1|max:12',
+            'expiry_year' => 'required_if:type,==,CREDIT_CARD|nullable|numeric|digits:4',
+            'ccv' => 'required_if:type,==,CREDIT_CARD|nullable|numeric|digits:3',
         ];
     }
 }

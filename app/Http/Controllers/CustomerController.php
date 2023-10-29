@@ -48,14 +48,9 @@ class CustomerController extends Controller
             $createdCustomer = $this->customerRepository->store($request->all());
             $createdCustomerInAsaas = $this->asaasService->createCustomerRequest($createdCustomer);
 
-            if (count($createdCustomerInAsaas) > 0) {
-                return $this->customerRepository->updateById([
-                            'asaas_customer_id' => $createdCustomerInAsaas['id']
-                        ], $createdCustomer->id);
-            }
-
-            return redirect()->route('customers.index')                                                                                                       
-                ->with('message', 'Erro ao salvar o cliente na API');
+            $this->customerRepository->updateById([
+                        'asaas_customer_id' => $createdCustomerInAsaas['id']
+                    ], $createdCustomer->id);
         } catch (\Exception $exception) {
             Log::error('Internal error', [
                 'exception' => $exception->getMessage(),
@@ -63,10 +58,10 @@ class CustomerController extends Controller
             ]);
 
             return redirect()->route('customers.index')                                                                                                       
-                ->with('message', 'Erro ao salvar o Cliente');
+                ->with('error', 'Erro ao salvar o Cliente, consulte os logs para mais detalhes.');
         }
 
         return redirect()->route('customers.index')                                                                                                       
-            ->with('message', 'Cliente criado com sucesso.');
+            ->with('success', 'Cliente criado com sucesso.');
     }
 }

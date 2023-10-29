@@ -54,19 +54,12 @@ class TransactionController extends Controller
             $createdTransaction = $this->transactionRepository->store($request->all());
             $createdTransactionInAsaas = $this->asaasService->createTransactionRequest($createdTransaction, $request->all());
 
-            if (count($createdTransactionInAsaas) > 0) {
-                $this->transactionRepository->updateById([
-                    'asaas_transaction_id' => $createdTransactionInAsaas['id'],
-                    'status' => $createdTransactionInAsaas['status'],
-                ], $createdTransaction->id);
+            $this->transactionRepository->updateById([
+                'asaas_transaction_id' => $createdTransactionInAsaas['id'],
+                'status' => $createdTransactionInAsaas['status'],
+            ], $createdTransaction->id);
 
-                return view('transactions.success', compact('createdTransactionInAsaas'));
-            }
-
-            $this->transactionRepository->delete($createdTransaction->id);
-
-            return redirect()->route('transactions.index')                                                                                                       
-                ->with('message', 'Erro ao salvar transação');
+            return view('transactions.success', compact('createdTransactionInAsaas'));
         } catch (\Exception $exception) {
             Log::error('Internal error', [
                 'exception' => $exception->getMessage(),
@@ -74,10 +67,7 @@ class TransactionController extends Controller
             ]);
 
             return redirect()->route('transactions.index')                                                                                                       
-                ->with('message', 'Erro ao salvar transação');
+                ->with('error', 'Erro ao salvar transação, consulte os logs para mais detalhes.');
         }
-
-        return redirect()->route('transactions.index')                                                                                                       
-            ->with('message', 'Transação criada com sucesso.');
     }
 }

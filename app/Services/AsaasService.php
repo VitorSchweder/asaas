@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Log;
 use GuzzleHttp\Client;
 use App\Models\Transaction; 
 use Carbon\Carbon;
+use Exception;
 
 class AsaasService 
 {
@@ -26,25 +27,37 @@ class AsaasService
             'addressNumber' => $customer->address_number,
         ];
 
-        return $this->makeRequest($body, '/v3/customers');
+        $data = $this->makeRequest($body, '/v3/customers');
+
+        if (isset($data['error'])) {
+            throw new Exception($data['message']);
+        }
+
+        return $data;
     }
 
-    public function createTransactionRequest($transaction, $request)
+    public function createTransactionRequest($transaction, $request): array|Exception
     {
         if ($transaction->type == Transaction::TYPE_CREDIT_CARD) {
-            return $this->createCreditCardTransaction($transaction, $request);
+            $data = $this->createCreditCardTransaction($transaction, $request);
         }
 
         if ($transaction->type == Transaction::TYPE_BOLETO) {
-            return $this->createBoletoTransaction($transaction, $request);
+            $data = $this->createBoletoTransaction($transaction, $request);
         }
 
         if ($transaction->type == Transaction::TYPE_PIX) {
-            return $this->createPixTransaction($transaction, $request);
+            $data = $this->createPixTransaction($transaction, $request);
         }
+
+        if (isset($data['error'])) {
+            throw new Exception($data['message']);
+        }
+
+        return $data;
     }
 
-    private function createBoletoTransaction($transaction, $request)
+    private function createBoletoTransaction($transaction, $request): array
     {
         $date = Carbon::now();
         $date = $date->addDays(2);
@@ -59,7 +72,7 @@ class AsaasService
         return $this->makeRequest($body, '/v3/payments');
     }
 
-    private function createPixTransaction($transaction, $request)
+    private function createPixTransaction($transaction, $request): array
     {
         $date = Carbon::now();
         $date = $date->addDays(2);
@@ -72,12 +85,16 @@ class AsaasService
         ];
 
         $resultTransaction = $this->makeRequest($body, '/v3/payments');
-        $resultData = $this->makeRequest([], '/v3/payments/'.$resultTransaction['id'].'/pixQrCode', 'GET');
+
+        $resultData = [];
+        if (isset($resultTransaction['id'])) {
+            $resultData = $this->makeRequest([], '/v3/payments/'.$resultTransaction['id'].'/pixQrCode', 'GET');
+        }
 
         return array_merge($resultTransaction, $resultData);
     }
 
-    private function createCreditCardTransaction($transaction, $request)
+    private function createCreditCardTransaction($transaction, $request): array
     {
         $date = Carbon::now();
         $date = $date->addDays(2);
@@ -130,13 +147,11 @@ class AsaasService
             $response = $response->getBody()->getContents();
 
             return json_decode($response, true);
-        } catch (\Exception $exception) {
-            Log::error('Internal error', [
-                'exception' => $exception->getMessage(),
-                'code' => 'asaas_service_request'
-            ]);
-
-            return [];
+        } catch (Exception $exception) {
+            return [
+                'error' => true,
+                'message' => $exception->getMessage(),
+            ];
         }
     }
 }
